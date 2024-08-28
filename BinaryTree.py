@@ -64,18 +64,15 @@ class BinaryTree:
 				self.current.value = token
 				self.current = self.current.parent
 
-	def tree_computation(self, node=None):
-		if node is None:
-			node = self.root
-		if node.left_child is None and node.right_child is None:
+
+	def tree_computation(self, node):
+		left = node.left_child
+		right = node.right_child
+
+		if left and right:
+			return eval(str(self.tree_computation(left)) + node.value + str(self.tree_computation(right)))
+		else:
 			return node.value
-		if node.left_child:
-			left_value = self.tree_computation(node.left_child)
-			node.left_child.value = eval(left_value + node.value + node.left_child.value)
-		if node.right_child:
-			right_value = self.tree_computation(node.right_child)
-			node.right_child.value = eval(right_value + node.value + node.right_child.value)
-		return node.value
 
 
 	def print_tree(self, node=None, level=0, prefix="Root: "):
@@ -91,5 +88,5 @@ expression = ['(', '3', '+', '(', '4', '*', '5' ,')',')']
 binary_tree = BinaryTree(None)
 binary_tree.tree_generation(expression)
 binary_tree.print_tree()
-binary_tree.tree_computation(binary_tree.root)
-binary_tree.print_tree()
+print(binary_tree.tree_computation(binary_tree.root))
+# binary_tree.print_tree()
