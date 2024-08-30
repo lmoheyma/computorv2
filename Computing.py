@@ -22,7 +22,6 @@ def tokenPreprocessing(expression: list):
 	def parseExpression(expression: list) -> list:
 		stack = []
 		current = []
-		# op = ['+','-', '*', '/']
 		for element in expression:
 			if element == '(':
 				stack.append(current)
@@ -33,7 +32,7 @@ def tokenPreprocessing(expression: list):
 				current.append(temp)
 			else:
 				current.append(element)
-		print(current)
+		# print(current)
 		return current
 	
 	def format_expression(expression):
@@ -66,11 +65,9 @@ def compute(input: str) -> str:
 	splited_input = input.split('=')
 	expression = stringToList(splited_input[1])
 	expression = tokenPreprocessing(expression)
-	print(expression)
-	# expression = ['(', '5', '+', '4', ')']
 	binary_tree = BinaryTree(None)
 	binary_tree.tree_generation(expression)
-	binary_tree.print_tree()
+	# binary_tree.print_tree()
 	res = binary_tree.tree_computation(binary_tree.root)
-	print("Result: " + str(res))
+	# print("Result: " + str(res))
 	return splited_input[0] + '=' + str(res)
