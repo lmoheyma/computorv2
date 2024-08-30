@@ -1,5 +1,6 @@
 from Parsing import parsing, expander, printVar, addVariable, ft_strchr
 from Computing import compute
+
 def main():
 	variables = []
 	while 42:
