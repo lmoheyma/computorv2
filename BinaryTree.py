@@ -46,7 +46,7 @@ class BinaryTree:
 	
 	def get_right_value(self):
 		return self.current.right_child
-	
+
 	def tree_generation(self, expression: list):
 		token_list = ["+", "-", "/", "*"]
 		for token in expression:
@@ -84,9 +84,9 @@ class BinaryTree:
 		if node.right_child:
 			self.print_tree(node.right_child, level + 1, "R--- ")
 
-expression = ['(', '3', '+', '(', '4', '*', '5' ,')',')']
-binary_tree = BinaryTree(None)
-binary_tree.tree_generation(expression)
-binary_tree.print_tree()
-print(binary_tree.tree_computation(binary_tree.root))
+# expression = ['(', '(', '1', '+', '2', ')', '+', '(', '3', '-' ,'1', ')', ')']
+# binary_tree = BinaryTree(None)
+# binary_tree.tree_generation(expression)
+# binary_tree.print_tree()
+# print(binary_tree.tree_computation(binary_tree.root))
 # binary_tree.print_tree()

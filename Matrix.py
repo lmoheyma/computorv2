@@ -2,8 +2,8 @@
 from BaseAssignmentValue import BaseAssignmentValue
 
 class Matrix(BaseAssignmentValue):
-	def __init__(self) -> None:
-		super.__init__()
+	def __init__(self, name, value) -> None:
+		super.__init__(name, value)
 		self.rows = len(self.value)
 		self.columns = len(self.value[0])
 		self.elements = self.value

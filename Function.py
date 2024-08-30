@@ -2,8 +2,8 @@
 from BaseAssignmentValue import BaseAssignmentValue
 
 class Function(BaseAssignmentValue):
-	def __init__(self) -> None:
-		super.__init__()
+	def __init__(self, name, value) -> None:
+		super.__init__(name, value)
 		self.expression = self.value
 		self.variables = self.getVariables()
 
