@@ -18,21 +18,54 @@ def stringToList(expression: str) -> list:
 def isOperator(c: str) -> bool:
 	return c == '*' or c == '/' or c == '+' or c == '-'
 
-def token_preprocessing(expression: list):
-	# pass
-	# tokenizedExpression = ""
-	# group = []
-	# countOperand = [x for x in expression if x.isnum()]
-	# print(countOperand)
-	if any(char in ['+', '-', '*', '/'] for char in expression):
-		expression.insert(0, '(')
-		expression.append(')')
-	return expression
+def tokenPreprocessing(expression: list):
+	def parseExpression(expression: list) -> list:
+		stack = []
+		current = []
+		# op = ['+','-', '*', '/']
+		for element in expression:
+			if element == '(':
+				stack.append(current)
+				current = []
+			elif element == ')':
+				temp = current
+				current = stack.pop()
+				current.append(temp)
+			else:
+				current.append(element)
+		print(current)
+		return current
+	
+	def format_expression(expression):
+		if isinstance(expression, list):
+			while len(expression) > 1:
+				for i in range(1, len(expression), 2):
+					if expression[i] in '*/':
+						left_expression = format_expression(expression[i - 1])
+						right_expression = format_expression(expression[i + 1])
+						sub = f"({left_expression} {expression[i]} {right_expression})"
+						expression = expression[:i - 1] + [sub] + expression[i + 2:]
+						break
+				else:
+					break
+			while len(expression) > 1:
+				op = expression[1]
+				left_expression = format_expression(expression[0])
+				right_expression = format_expression(expression[2])
+				expression = [f"({left_expression} {op} {right_expression})"] + expression[3:]
+			return expression[0]
+		else:
+			return expression
+
+	parsed_expression = parseExpression(expression)
+	formated_expression = format_expression(parsed_expression)
+	formated_expression = stringToList(formated_expression.replace(" ", ""))
+	return formated_expression
 
 def compute(input: str) -> str:
-	splitedInput = input.split('=')
-	expression = stringToList(splitedInput[1])
-	expression = token_preprocessing(expression)
+	splited_input = input.split('=')
+	expression = stringToList(splited_input[1])
+	expression = tokenPreprocessing(expression)
 	print(expression)
 	# expression = ['(', '5', '+', '4', ')']
 	binary_tree = BinaryTree(None)
@@ -40,4 +73,4 @@ def compute(input: str) -> str:
 	binary_tree.print_tree()
 	res = binary_tree.tree_computation(binary_tree.root)
 	print("Result: " + str(res))
-	return splitedInput[0] + '=' + str(res)
+	return splited_input[0] + '=' + str(res)
