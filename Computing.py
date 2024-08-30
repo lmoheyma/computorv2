@@ -37,6 +37,8 @@ def tokenPreprocessing(expression: list):
 	
 	def format_expression(expression):
 		if isinstance(expression, list):
+			if len(expression) == 1:
+				return format_expression(expression[0])
 			while len(expression) > 1:
 				for i in range(1, len(expression), 2):
 					if expression[i] in '*/':
@@ -57,14 +59,19 @@ def tokenPreprocessing(expression: list):
 			return expression
 
 	parsed_expression = parseExpression(expression)
-	formated_expression = format_expression(parsed_expression)
-	formated_expression = stringToList(formated_expression.replace(" ", ""))
+	if not (formated_expression := format_expression(parsed_expression)):
+		return None
+	if isinstance(formated_expression, str):
+		formated_expression = stringToList(formated_expression.replace(" ", ""))
 	return formated_expression
 
 def compute(input: str) -> str:
 	splited_input = input.split('=')
 	expression = stringToList(splited_input[1])
-	expression = tokenPreprocessing(expression)
+	if not (expression := tokenPreprocessing(expression)):
+		print("Invalid syntax")
+		return None
+	# print(expression)
 	binary_tree = BinaryTree(None)
 	binary_tree.tree_generation(expression)
 	# binary_tree.print_tree()

@@ -9,10 +9,12 @@ def main():
 			printVar(variables)
 			continue
 		if (command := parsing(command)) == -1:
-			print("  Invalid input")
+			print("  Invalid syntax")
 			continue
-		command = expander(command, variables)
-		command = compute(command)
+		if not (command := expander(command, variables)):
+			continue
+		if not (command := compute(command)):
+			continue
 		variables = addVariable(command, variables)
 		print(f" {ft_strchr(command.split('=')[0], variables)}")
 	return 0

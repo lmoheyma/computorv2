@@ -8,6 +8,10 @@ def parsing(input) -> int:
 	splitedInput = input.split('=')
 	if splitedInput[0] == "" or splitedInput[1] == "":
 		return -1
+	try:
+		eval(splitedInput[1])
+	except Exception:
+		return -1
 	return input.replace(" ", "")
 
 def ft_strchr(element, variables):
@@ -16,14 +20,18 @@ def ft_strchr(element, variables):
 			return var.value
 	return None
 
-def expander(input, variables):
+def expander(input, variables) -> str:
 	expandedInput = ""
 	splitedInput = input.split('=')
 	for element in splitedInput[1]:
 		if (varValue := ft_strchr(element, variables)) and element.isalpha():
 			expandedInput += varValue
 		else:
-			expandedInput += element
+			if element.isalpha():
+				print(f"Variable {element} is not defined")
+				return None
+			else:
+				expandedInput += element
 	return splitedInput[0] + '=' + expandedInput
 
 def getIndexOfVariable(var: str, variables: list) -> int:
