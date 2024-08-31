@@ -14,4 +14,3 @@ class Function(BaseAssignmentValue):
 			if letter.isalpha():
 				variables.append(letter)
 		return variables
-	

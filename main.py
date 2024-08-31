@@ -1,4 +1,4 @@
-from Parsing import parsing, expander, printVar, addVariable, ft_strchr
+from Parsing import parsing, expander, printVar, addVariable, ft_strchr, identify
 from Computing import compute
 
 def main():

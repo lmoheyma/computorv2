@@ -1,5 +1,8 @@
 from BaseAssignmentValue import BaseAssignmentValue
 
+def identify(input):
+	pass
+
 def parsing(input) -> int:
 	if input.find('=') == -1 or \
 		input.count('=') > 1:
@@ -8,10 +11,11 @@ def parsing(input) -> int:
 	splitedInput = input.split('=')
 	if splitedInput[0] == "" or splitedInput[1] == "":
 		return -1
-	try:
-		eval(splitedInput[1])
-	except Exception:
-		return -1
+	valueType = identify(input)
+	# try:
+	# 	eval(splitedInput[1])
+	# except Exception:
+	# 	return -1
 	return input.replace(" ", "")
 
 def ft_strchr(element, variables):
@@ -24,14 +28,11 @@ def expander(input, variables) -> str:
 	expandedInput = ""
 	splitedInput = input.split('=')
 	for element in splitedInput[1]:
-		if (varValue := ft_strchr(element, variables)) and element.isalpha():
+		if (varValue := ft_strchr(element, variables)) and element.isalpha() and \
+			not(element == 'i'):
 			expandedInput += varValue
 		else:
-			if element.isalpha():
-				print(f"Variable {element} is not defined")
-				return None
-			else:
-				expandedInput += element
+			expandedInput += element
 	return splitedInput[0] + '=' + expandedInput
 
 def getIndexOfVariable(var: str, variables: list) -> int:
@@ -39,7 +40,6 @@ def getIndexOfVariable(var: str, variables: list) -> int:
 		if var == variables[i].name:
 			return i
 	return -1
-
 
 def addVariable(var: str, variables: list) -> list:
 	splitedVar = var.split('=')
