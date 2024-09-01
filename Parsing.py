@@ -1,7 +1,21 @@
 from BaseAssignmentValue import BaseAssignmentValue
+import re
 
-def identify(input):
-	pass
+def identify_type(input):
+	right_arg = input.split('=')[1].strip()
+	left_arg = input.split('=')[0].strip()
+	
+	if (matches :=re.finditer(r"[+-]?(((\d+\.\d*|\d*\.\d+|\d+)[+-])?((\d+\.\d*|\d*\.\d+|\d+)i|i(\d+\.\d*|\d*\.\d+|\d+)|i)|(\d+\.\d*|\d*\.\d+|\d+)?e\^(\([+-]?|[+-]?\()((\d+\.\d*|\d*\.\d+|\d+)i|i(\d+\.\d*|\d*\.\d+|\d+)|i)\))", right_arg, re.MULTILINE)):
+		results = [match.group() for match in matches]
+		if len(results) > 0: return "Imaginary"
+	if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*\s*\([^i]*\)$', left_arg):
+		return "Function"
+	if re.match(r'^\[.*\]$', right_arg):
+		return "Matrix"
+	if re.match(r"^\s*[-+]?(\d+(\.\d*)?|\.\d+)(\s*[-+*/]\s*[-+]?(\d+(\.\d*)?|\.\d+))*\s*$", right_arg):
+		return "Rational"
+	else:
+		return "Unknown"
 
 def parsing(input) -> int:
 	if input.find('=') == -1 or \
