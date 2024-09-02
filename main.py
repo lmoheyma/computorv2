@@ -1,25 +1,20 @@
-from Parsing import parsing, expander, printVar, addVariable, ft_strchr, identify_type
+from Parsing import preProcessing, expander, addVariable, ft_strchr, identifyType
 from Computing import compute
+from Environment import Environment
 
 def main():
-	variables = []
+	environment = Environment()
 	while 42:
 		command = input("> ")
 		if command == "var":
-			printVar(variables)
+			environment.printVar()
 			continue
-		inputType = identify_type(command)
-		match inputType:
-			case "Function":
-				print("Function")
-			case "Matrix":
-				print("Matrix")
-			case "Rational":
-				print("Rational Number")
-			case "Imaginary":
-				print("Imaginary Number")
-			case _:
-				print("Unknown Type")
+		if preProcessing(command) == -1 or command == "":
+			continue
+		inputType = identifyType(command, environment)
+		# print(type(inputType))
+		if inputType:
+			inputType.parsing()
 		# if (command := parsing(command)) == -1:
 		# 	print("  Invalid syntax")
 		# 	continue

@@ -1,8 +1,8 @@
 class BaseAssignmentValue:
-	def __init__(self, input) -> None:
-		self.input = input
-		self.name = input.split('=')[0]
-		self.value = input.split('=')[1]
+	def __init__(self, name, value, environment) -> None:
+		self.name = name
+		self.value = value
+		self.environment = environment
 
 	def compute(self):
 		pass
