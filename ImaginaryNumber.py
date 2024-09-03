@@ -39,7 +39,14 @@ class ImaginaryNumber(BaseAssignmentValue):
 		pass
 	
 	def convertToInt(self):
-		pass
+		temp = self.imaginary_part
+		try:
+			self.imaginary_part = int(self.imaginary_part)
+			if self.imaginary_part / temp != 1:
+				self.imaginary_part = temp
+		except ValueError:
+			print("Value Error")
+			
 
 	def preProcess(self):
 		value = self.value.replace(" ", "")
@@ -63,12 +70,14 @@ class ImaginaryNumber(BaseAssignmentValue):
 					self.value = str(self.real_part)
 					if self.value[0] == '+': self.value = self.value[1:]
 					if self.imaginary_part != 0:
+						self.convertToInt()
 						if self.imaginary_part > 0:
 							self.value += " + " + str(self.imaginary_part) + 'i'
 						else:
 							self.value += " - " + str(self.imaginary_part)[1:] + 'i'
 				else:
 					if self.imaginary_part != 0:
+						self.convertToInt()
 						if self.imaginary_part > 0:
 							self.value = str(self.imaginary_part) + 'i'
 						else:
