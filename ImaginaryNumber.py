@@ -85,6 +85,7 @@ class ImaginaryNumber(BaseAssignmentValue):
 		try:
 			if self.value == "?":
 				self.swap()
+				self.expander(self.value, 'value')
 				self.real_part = self.parseImaginaryPart()
 				try:
 					self.real_part = eval(self.real_part)
