@@ -42,7 +42,7 @@ def identifyType(input: str, environment: Environment) -> str:
 			case _:
 				print("  Syntax error")
 
-	left_arg = expander(input.split('=')[0].strip(), environment.variables)
+	left_arg = input.split('=')[0].strip()
 	right_arg = expander(input.split('=')[1].strip(), environment.variables)
 	return matchRegexResult(left_arg, right_arg, environment, flag=0)
 

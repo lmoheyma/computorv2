@@ -27,8 +27,6 @@ class ImaginaryNumber(BaseAssignmentValue):
 				value = value[:j] + value[i+1:]
 				i-=(i+1)-j
 			i+=1
-		# print("imaginary part: ", self.imaginary_part)
-		# print("real part: ", value)
 		return value
 
 
@@ -38,6 +36,11 @@ class ImaginaryNumber(BaseAssignmentValue):
 	def calculateArgument(self):
 		pass
 	
+	def swap(self):
+		temp = self.value
+		self.value = self.name
+		self.name = temp
+
 	def convertToInt(self):
 		temp = self.imaginary_part
 		try:
@@ -56,41 +59,48 @@ class ImaginaryNumber(BaseAssignmentValue):
 				return 1
 		return 0
 
+	def reorganizeExpression(self):
+		if self.real_part == '' or self.real_part == '+' or self.real_part == '-':
+			self.real_part = 0
+		if self.real_part != 0:
+			self.value = str(self.real_part)
+			if self.value[0] == '+': self.value = self.value[1:]
+			if self.imaginary_part != 0:
+				self.convertToInt()
+				if self.imaginary_part > 0:
+					self.value += " + " + str(self.imaginary_part) + 'i'
+				else:
+					self.value += " - " + str(self.imaginary_part)[1:] + 'i'
+		else:
+			if self.imaginary_part != 0:
+				self.convertToInt()
+				if self.imaginary_part > 0:
+					self.value = str(self.imaginary_part) + 'i'
+				else:
+					self.value = str(self.imaginary_part) + 'i'
+
 	def parsing(self):
 		# if self.preProcess():
 		# 	return -1
 		try:
 			if self.value == "?":
-				print(f"  {self.name}")
-			else:
-				# self.expander(self.value, flag='value')
-				# print(self.value)
+				self.swap()
 				self.real_part = self.parseImaginaryPart()
 				try:
 					self.real_part = eval(self.real_part)
 				except Exception:
 					print("  Compute Error")
 					return
-				if self.real_part == '' or self.real_part == '+' or self.real_part == '-':
-					self.real_part = 0
-				if self.real_part != 0:
-					self.value = str(self.real_part)
-					if self.value[0] == '+': self.value = self.value[1:]
-					if self.imaginary_part != 0:
-						self.convertToInt()
-						if self.imaginary_part > 0:
-							self.value += " + " + str(self.imaginary_part) + 'i'
-						else:
-							self.value += " - " + str(self.imaginary_part)[1:] + 'i'
-				else:
-					if self.imaginary_part != 0:
-						self.convertToInt()
-						if self.imaginary_part > 0:
-							self.value = str(self.imaginary_part) + 'i'
-						else:
-							self.value = str(self.imaginary_part) + 'i'
-				# print(f"  {self.value}")
-				# self.checkFormat()
+				self.reorganizeExpression()
+				print(f"  {self.value}")
+			else:
+				self.real_part = self.parseImaginaryPart()
+				try:
+					self.real_part = eval(self.real_part)
+				except Exception:
+					print("  Compute Error")
+					return
+				self.reorganizeExpression()
 				self.environment.addVariable(self)
 		except Exception:
 			print("  Syntax Error")
