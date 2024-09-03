@@ -4,6 +4,8 @@
 -> Impossible de créer une variable nommé 'i'
 -> Pendant l'expander, checker les variables de + de 1 caractère
 -> Les nombres décimaux
+-> si une variable est colle a une valeur -> multiplier
+    exemple: 6k <=> 6*k
 
 -> check si l'input contient '= ?'
     -> calculer la partie gauche de l'expression, retourner le résultat de cette dernière

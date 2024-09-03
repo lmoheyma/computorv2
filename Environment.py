@@ -41,4 +41,4 @@ class Environment:
 
 	def printVar(self):
 		for var in self.variables:
-			print(f"Variable: {var.name}  |  Value: {var.value}")
+			print(f"Variable: {var.name}  |  Value: {var.value}  |  Type: {type(var)}")

@@ -7,7 +7,7 @@ from Environment import Environment
 import re
 
 def identifyType(input: str, environment: Environment) -> str:
-	def computeRegex(left_arg, right_arg, environment):
+	def computeRegex(left_arg, right_arg):
 		if (matches :=re.finditer(r"[+-]?(((\d+\.\d*|\d*\.\d+|\d+)[+-])?((\d+\.\d*|\d*\.\d+|\d+)i|i(\d+\.\d*|\d*\.\d+|\d+)|i)|(\d+\.\d*|\d*\.\d+|\d+)?e\^(\([+-]?|[+-]?\()((\d+\.\d*|\d*\.\d+|\d+)i|i(\d+\.\d*|\d*\.\d+|\d+)|i)\))", right_arg, re.MULTILINE)):
 			results = [match.group() for match in matches]
 			if len(results) > 0: return "Imaginary"
@@ -16,7 +16,7 @@ def identifyType(input: str, environment: Environment) -> str:
 		if re.match(r'^\[.*\]$', right_arg):
 			return "Matrix"
 		try:
-			eval(expander(right_arg, environment.variables))
+			eval(right_arg)
 			return "Rational"
 		except Exception:
 			if right_arg == "?": 
@@ -25,9 +25,9 @@ def identifyType(input: str, environment: Environment) -> str:
 
 	def matchRegexResult(left_arg, right_arg, environment, flag):
 		if not flag:
-			varType = computeRegex(left_arg, right_arg, environment)
+			varType = computeRegex(left_arg, right_arg)
 		else:
-			varType = computeRegex(left_arg, left_arg, environment)
+			varType = computeRegex(left_arg, left_arg)
 		match varType:
 			case "Function":
 				return Function(left_arg, right_arg, environment)
@@ -42,8 +42,8 @@ def identifyType(input: str, environment: Environment) -> str:
 			case _:
 				print("  Syntax error")
 
-	left_arg = input.split('=')[0].strip()
-	right_arg = input.split('=')[1].strip()
+	left_arg = expander(input.split('=')[0].strip(), environment.variables)
+	right_arg = expander(input.split('=')[1].strip(), environment.variables)
 	return matchRegexResult(left_arg, right_arg, environment, flag=0)
 
 def preProcessing(input) -> int:

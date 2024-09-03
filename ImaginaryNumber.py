@@ -45,7 +45,7 @@ class ImaginaryNumber(BaseAssignmentValue):
 			if self.imaginary_part / temp != 1:
 				self.imaginary_part = temp
 		except ValueError:
-			print("Value Error")
+			print("  Value Error")
 			
 
 	def preProcess(self):
@@ -57,13 +57,20 @@ class ImaginaryNumber(BaseAssignmentValue):
 		return 0
 
 	def parsing(self):
-		if self.preProcess():
-			return -1
+		# if self.preProcess():
+		# 	return -1
 		try:
 			if self.value == "?":
 				print(f"  {self.name}")
 			else:
+				# self.expander(self.value, flag='value')
+				# print(self.value)
 				self.real_part = self.parseImaginaryPart()
+				try:
+					self.real_part = eval(self.real_part)
+				except Exception:
+					print("  Compute Error")
+					return
 				if self.real_part == '' or self.real_part == '+' or self.real_part == '-':
 					self.real_part = 0
 				if self.real_part != 0:
@@ -82,10 +89,29 @@ class ImaginaryNumber(BaseAssignmentValue):
 							self.value = str(self.imaginary_part) + 'i'
 						else:
 							self.value = str(self.imaginary_part) + 'i'
-				print(f"  {self.value}")
+				# print(f"  {self.value}")
 				# self.checkFormat()
-				# self.environment.addVariable(self)
+				self.environment.addVariable(self)
 		except Exception:
-			print("Syntax Error")
+			print("  Syntax Error")
 			return -1
 		return 0
+	
+	def ft_strchr(self, element):
+		for var in self.environment.variables:
+			if element == var.name:
+				return var.value
+		return None
+
+	def expander(self, arg, flag):
+		expandedInput = ""
+		for element in arg:
+			if (varValue := self.ft_strchr(element)) and element.isalpha() and \
+				not(element == 'i'):
+				expandedInput += varValue
+			else:
+				expandedInput += element
+		if flag == 'name':
+			self.name = expandedInput
+		else:
+			self.value = expandedInput
