@@ -8,17 +8,37 @@ class RationalNumber(BaseAssignmentValue):
 		self.denominator = 1
 		self.is_simplified = False
 	
+	def ft_strchr(self, element):
+		for var in self.environment.variables:
+			if element == var.name:
+				return var.value
+		return None
+
+	def expander(self, arg, flag):
+		expandedInput = ""
+		for element in arg:
+			if (varValue := self.ft_strchr(element)) and element.isalpha() and \
+				not(element == 'i'):
+				expandedInput += varValue
+			else:
+				expandedInput += element
+		if flag == 'name':
+			self.name = expandedInput
+		else:
+			self.value = expandedInput
+
 	def parsing(self):
 		try:
 			if self.value == "?": # print result
+				self.expander(self.name, flag='name')
 				value = eval(self.name)
 				print(f"  {value}")
 			else:
-				print(self.value)
-				self.value = eval(self.value) # computed value and add to variables
+				self.expander(self.value, flag='value')
+				self.value = str(eval(self.value)) # computed value and add to variables
 				self.environment.addVariable(self)
 		except Exception:
-			print("Syntax Error tt")
+			print("Syntax Error")
 			return -1
 		return 0
 	

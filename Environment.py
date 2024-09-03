@@ -29,12 +29,15 @@ class Environment:
 		if self.ft_strchr(variable.name):
 			if (index := self.getIndexOfVariable(variable.name)) == -1:
 				print("Can't add variable")
-				pass
-			self.variables[index].value = variable.value
+				return
+			if type(variable) != type(self.variables[index]):
+				self.variables[index] = variable
+			else:
+				self.variables[index].value = variable.value
 		else:
-			print(variable)
+			# print(variable)
 			self.variables.append(variable)
-		return self.variables
+		print(f"  {variable.value}")
 
 	def printVar(self):
 		for var in self.variables:

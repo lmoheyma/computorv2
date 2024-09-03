@@ -7,7 +7,7 @@ from Environment import Environment
 import re
 
 def identifyType(input: str, environment: Environment) -> str:
-	def computeRegex(left_arg, right_arg):
+	def computeRegex(left_arg, right_arg, environment):
 		if (matches :=re.finditer(r"[+-]?(((\d+\.\d*|\d*\.\d+|\d+)[+-])?((\d+\.\d*|\d*\.\d+|\d+)i|i(\d+\.\d*|\d*\.\d+|\d+)|i)|(\d+\.\d*|\d*\.\d+|\d+)?e\^(\([+-]?|[+-]?\()((\d+\.\d*|\d*\.\d+|\d+)i|i(\d+\.\d*|\d*\.\d+|\d+)|i)\))", right_arg, re.MULTILINE)):
 			results = [match.group() for match in matches]
 			if len(results) > 0: return "Imaginary"
@@ -15,18 +15,19 @@ def identifyType(input: str, environment: Environment) -> str:
 			return "Function"
 		if re.match(r'^\[.*\]$', right_arg):
 			return "Matrix"
-		if re.match(r"^\s*[-+]?(\d+(\.\d*)?|\.\d+)(\s*[-+*/]\s*[-+]?(\d+(\.\d*)?|\.\d+))*\s*$", right_arg):
+		try:
+			eval(expander(right_arg, environment.variables))
 			return "Rational"
-		else:
-			if right_arg == "?":
+		except Exception:
+			if right_arg == "?": 
 				return "Calculate"
 			return "Unknown"
 
 	def matchRegexResult(left_arg, right_arg, environment, flag):
 		if not flag:
-			varType = computeRegex(left_arg, right_arg)
+			varType = computeRegex(left_arg, right_arg, environment)
 		else:
-			varType = computeRegex(left_arg, left_arg)
+			varType = computeRegex(left_arg, left_arg, environment)
 		match varType:
 			case "Function":
 				return Function(left_arg, right_arg, environment)
@@ -63,14 +64,13 @@ def ft_strchr(element, variables):
 
 def expander(input, variables) -> str:
 	expandedInput = ""
-	splitedInput = input.split('=')
-	for element in splitedInput[1]:
+	for element in input:
 		if (varValue := ft_strchr(element, variables)) and element.isalpha() and \
 			not(element == 'i'):
 			expandedInput += varValue
 		else:
 			expandedInput += element
-	return splitedInput[0] + '=' + expandedInput
+	return expandedInput
 
 def getIndexOfVariable(var: str, variables: list) -> int:
 	for i in range(len(variables)):
