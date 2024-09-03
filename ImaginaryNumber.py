@@ -1,6 +1,4 @@
-# real_part, imaginary_part, module, argument
 from BaseAssignmentValue import BaseAssignmentValue
-import re
 
 class ImaginaryNumber(BaseAssignmentValue):
 	def __init__(self, name, value, environment) -> None:
@@ -97,11 +95,14 @@ class ImaginaryNumber(BaseAssignmentValue):
 			else:
 				self.real_part = self.parseImaginaryPart()
 				try:
-					self.real_part = eval(self.real_part)
+					if self.real_part != '' and self.real_part != '+' \
+					and self.real_part != '-' and self.real_part != ' ':	
+						self.real_part = eval(self.real_part)
 				except Exception:
 					print("  Compute Error")
 					return
 				self.reorganizeExpression()
+				print(self.imaginary_part, self.real_part)
 				self.environment.addVariable(self)
 		except Exception:
 			print("  Syntax Error")
@@ -116,12 +117,23 @@ class ImaginaryNumber(BaseAssignmentValue):
 
 	def expander(self, arg, flag):
 		expandedInput = ""
-		for element in arg:
-			if (varValue := self.ft_strchr(element)) and element.isalpha() and \
-				not(element == 'i'):
+		var = ""
+		i = 0
+		while i < len(arg):
+			while i < len(arg) and arg[i].isalpha():
+				var += arg[i]
+				i+=1
+			if i == len(arg): i-=1
+			if var == 'i':
+				i-=1
+				var = ""
+			if (varValue := self.ft_strchr(var)) and \
+				not(arg[i] == 'i'):
 				expandedInput += varValue
+				var = ""
 			else:
-				expandedInput += element
+				expandedInput += arg[i]
+			i+=1
 		if flag == 'name':
 			self.name = expandedInput
 		else:

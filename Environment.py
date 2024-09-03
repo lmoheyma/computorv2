@@ -26,6 +26,9 @@ class Environment:
 		return -1
 
 	def addVariable(self, variable: any) -> list:
+		if variable.name == 'i':
+			print("'i' is not a valid variable name")
+			return
 		if self.ft_strchr(variable.name):
 			if (index := self.getIndexOfVariable(variable.name)) == -1:
 				print("Can't add variable")

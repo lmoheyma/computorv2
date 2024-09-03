@@ -17,6 +17,7 @@ def identifyType(input: str, environment: Environment) -> str:
 			return "Matrix"
 		try:
 			eval(right_arg)
+			# print(right_arg)
 			return "Rational"
 		except Exception:
 			if right_arg == "?": 
@@ -27,7 +28,8 @@ def identifyType(input: str, environment: Environment) -> str:
 		if not flag:
 			varType = computeRegex(left_arg, right_arg)
 		else:
-			varType = computeRegex(left_arg, left_arg)
+			temp = expander(left_arg, environment.variables)
+			varType = computeRegex(temp, temp)
 		match varType:
 			case "Function":
 				return Function(left_arg, right_arg, environment)
@@ -64,12 +66,24 @@ def ft_strchr(element, variables):
 
 def expander(input, variables) -> str:
 	expandedInput = ""
-	for element in input:
-		if (varValue := ft_strchr(element, variables)) and element.isalpha() and \
-			not(element == 'i'):
+	var = ""
+	i = 0
+	while i < len(input):
+		while i < len(input) and input[i].isalpha():
+			var += input[i]
+			i+=1
+		if i == len(input): i-=1
+		if var == 'i':
+			if input[i] != 'i':
+				i-=1
+			var = ""
+		if (varValue := ft_strchr(var, variables)) and \
+			not(input[i] == 'i'):
 			expandedInput += varValue
+			var = ""
 		else:
-			expandedInput += element
+			expandedInput += input[i]
+		i+=1
 	return expandedInput
 
 def getIndexOfVariable(var: str, variables: list) -> int:

@@ -16,12 +16,20 @@ class RationalNumber(BaseAssignmentValue):
 
 	def expander(self, arg, flag):
 		expandedInput = ""
-		for element in arg:
-			if (varValue := self.ft_strchr(element)) and element.isalpha() and \
-				not(element == 'i'):
+		var = ""
+		i = 0
+		while i < len(arg):
+			while i < len(arg) and arg[i].isalpha():
+				var += arg[i]
+				i+=1
+			if i == len(arg): i-=1
+			if (varValue := self.ft_strchr(var)) and \
+				not(arg[i] == 'i'):
 				expandedInput += varValue
+				var = ""
 			else:
-				expandedInput += element
+				expandedInput += arg[i]
+			i+=1
 		if flag == 'name':
 			self.name = expandedInput
 		else:
