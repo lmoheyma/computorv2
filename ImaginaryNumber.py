@@ -9,6 +9,7 @@ class ImaginaryNumber(BaseAssignmentValue):
 		self.argument = 0
 
 	def parseImaginaryPart(self):
+		print(self.value)
 		value = self.value.replace(" ", "")
 		if value[0] == 'i': self.imaginary_part += 1
 		i = 0
@@ -16,14 +17,18 @@ class ImaginaryNumber(BaseAssignmentValue):
 			if value[i] == "i":
 				skipCaracters = 0
 				j = i - 1
+				print(j)
 				while (j >= 0) and not value[j].isdigit():
 					j-=1
 					skipCaracters+=1
 				while (j > 0) and (value[j].isdigit() or value[j] in '.'):
 					j-=1
+				print(value)
+				print(value[i], value[j], value[i-skipCaracters], j, i-skipCaracters)
 				self.imaginary_part += float(value[j:i-skipCaracters])
 				value = value[:j] + value[i+1:]
 				i-=(i+1)-j
+				skipCaracters = 0
 			i+=1
 		return value
 
@@ -80,6 +85,7 @@ class ImaginaryNumber(BaseAssignmentValue):
 	def parsing(self):
 		# if self.preProcess():
 		# 	return -1
+		self.real_part = self.parseImaginaryPart()
 		try:
 			if self.value == "?":
 				self.swap()
@@ -93,7 +99,7 @@ class ImaginaryNumber(BaseAssignmentValue):
 				self.reorganizeExpression()
 				print(f"  {self.value}")
 			else:
-				self.real_part = self.parseImaginaryPart()
+				# self.real_part = self.parseImaginaryPart()
 				try:
 					if self.real_part != '' and self.real_part != '+' \
 					and self.real_part != '-' and self.real_part != ' ':	
@@ -105,7 +111,7 @@ class ImaginaryNumber(BaseAssignmentValue):
 				print(self.imaginary_part, self.real_part)
 				self.environment.addVariable(self)
 		except Exception:
-			print("  Syntax Error")
+			print("  Syntax ErrorHH")
 			return -1
 		return 0
 	
