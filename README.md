@@ -1,3 +1,3 @@
 # Computor v2
 
-Project from 42School which is a mini-calculator in Python3
+Mini-calculator (bc like) in Python
