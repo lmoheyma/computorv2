@@ -7,16 +7,23 @@ class Environment:
         self.variables: Dict[str, BaseAssignmentValue] = {}
     
     def get_variable(self, name: str) -> Optional[BaseAssignmentValue]:
-        """Récupère une variable par son nom (insensible à la casse)"""
+        """Récupère une variable ou fonction par son nom (insensible à la casse, ignore le paramètre pour les fonctions)"""
         name_lower = name.lower()
+        # Recherche exacte
         for var_name, var in self.variables.items():
             if var_name.lower() == name_lower:
+                return var
+        # Si le nom est de la forme f(...), ou juste f, on cherche une variable/fonction dont le nom commence par f(
+        base_name = name_lower.split('(')[0]
+        for var_name, var in self.variables.items():
+            if var_name.lower().startswith(base_name + '('):
                 return var
         return None
 
     def set_variable(self, variable: BaseAssignmentValue) -> None:
         """Ajoute ou met à jour une variable"""
-        if variable.name.lower() == 'i':
+        unauthorized_names = ['i', '?']
+        if variable.name.lower() in unauthorized_names:
             print("'i' is not a valid variable name")
             return
         

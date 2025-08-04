@@ -17,30 +17,68 @@ class Parser:
         parts = input_str.split('=', 1)
         if len(parts) != 2:
             return None
-        
         left_part = parts[0].strip()
         right_part = parts[1].strip()
 
+        # Expand variables in right_part
+        def expand_variables(expr):
+            def repl(match):
+                var_name = match.group(0)
+                var = self.environment.get_variable(var_name)
+                if var:
+                    return str(var.value)
+                return var_name
+            return re.sub(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', repl, expr)
+
+        expanded_right = expand_variables(right_part)
+
+        # Ajoute le signe * entre les nombres et les variables dans right_part uniquement pour les fonctions
+        def add_stars(expr):
+            expr = re.sub(r'(\d)([a-zA-Z_])', r'\1*\2', expr)
+            expr = re.sub(r'([a-zA-Z_])(\d)', r'\1*\2', expr)
+            return expr
+
+        # Si right_part est une variable déjà définie
+        if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', right_part):
+            var = self.environment.get_variable(right_part)
+            if var:
+                # Retourne une nouvelle instance du même type
+                if isinstance(var, ComplexNumber):
+                    return ComplexNumber(left_part, str(var.value), self.environment)
+                if isinstance(var, Matrix):
+                    return Matrix(left_part, str(var.value), self.environment)
+                if isinstance(var, Function):
+                    return Function(left_part, str(var.value), self.environment)
+                if isinstance(var, RationalNumber):
+                    return RationalNumber(left_part, str(var.value), self.environment)
+
         if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*\s*\([^)]*\)$', left_part):
-            return Function(left_part, right_part, self.environment)
-        
+            # Ajoute les * sur l'expression brute, puis expand
+            right_with_stars = add_stars(right_part)
+            expanded_right_func = expand_variables(right_with_stars)
+            # On ne retire plus les variables inconnues
+            final_expr = expanded_right_func
+            return Function(left_part, final_expr, self.environment)
+
+        # Les autres cas utilisent expanded_right
         if re.match(r'^\[.*\]$', right_part):
-            return Matrix(left_part, right_part, self.environment)
-        
+            return Matrix(left_part, expanded_right, self.environment)
+
+        # Si c'est un nombre complexe
         if 'i' in right_part or right_part == "?":
-            temp_right = right_part.replace('i', '')
+            temp_right = expanded_right.replace('i', '')
             if re.search(r'[a-zA-Z]', temp_right):
-                if 'i' in right_part:
-                    return ComplexNumber(left_part, right_part, self.environment)
+                if 'i' in expanded_right:
+                    return ComplexNumber(left_part, expanded_right, self.environment)
             else:
-                if 'i' in right_part:
-                    return ComplexNumber(left_part, right_part, self.environment)
-        
+                if 'i' in expanded_right:
+                    return ComplexNumber(left_part, expanded_right, self.environment)
+
         func_call_match = re.match(r'^([a-zA-Z_][a-zA-Z0-9_]*)\s*\(\s*([^)]*)\s*\)$', left_part)
         if func_call_match and right_part == "?":
             func_name = func_call_match.group(1)
             arg_expr = func_call_match.group(2)
-            
+
             func = self.environment.get_variable(func_name)
             if func and isinstance(func, Function):
                 try:
@@ -51,8 +89,29 @@ class Parser:
                 except Exception:
                     print("Syntax Error")
                     return None
-        
-        return RationalNumber(left_part, right_part, self.environment)
+
+        # Appel de fonction dans l'assignation d'une variable
+        func_call_match = re.match(r'^([a-zA-Z_][a-zA-Z0-9_]*)\s*\(\s*([^)]*)\s*\)$', right_part)
+        if func_call_match:
+            func_name = func_call_match.group(1)
+            arg_expr = func_call_match.group(2)
+            func = self.environment.get_variable(func_name)
+            if func and isinstance(func, Function):
+                # Expand variables in arg_expr
+                expanded_arg = expand_variables(arg_expr)
+                try:
+                    arg_value = eval(expanded_arg.replace('^', '**'))
+                    result = func.evaluate(arg_value)
+                    return RationalNumber(left_part, str(result), self.environment)
+                except Exception:
+                    return None
+
+        # Si c'est un nombre rationnel, on évalue l'expression
+        try:
+            value = eval(expanded_right.replace('^', '**'))
+        except Exception:
+            value = expanded_right
+        return RationalNumber(left_part, str(value), self.environment)
 
     def preprocess(self, input_str: str) -> Optional[str]:
         """Préprocesse l'entrée utilisateur"""
@@ -67,5 +126,4 @@ class Parser:
         parts = input_str.split('=')
         if not parts[0].strip() or not parts[1].strip():
             return None
-        
         return input_str
