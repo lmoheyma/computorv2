@@ -38,6 +38,43 @@ class Parser:
             expr = re.sub(r'([a-zA-Z_])(\d)', r'\1*\2', expr)
             return expr
 
+        # Évalue les sous-expressions numériques dans une expression
+        def eval_numeric_subexpressions(expr):
+            # Fonction utilitaire pour savoir si une sous-expression contient des lettres
+            def has_letters(s):
+                return re.search(r'[a-zA-Z_]', s) is not None
+
+            # Évalue les parenthèses les plus profondes d'abord
+            pattern_paren = re.compile(r'\(([^()]+)\)')
+            while True:
+                match = pattern_paren.search(expr)
+                if not match:
+                    break
+                subexpr = match.group(1)
+                if not has_letters(subexpr):
+                    try:
+                        val = str(eval(subexpr.replace('^', '**')))
+                        expr = expr[:match.start()] + val + expr[match.end():]
+                    except Exception:
+                        expr = expr[:match.start()] + '(' + subexpr + ')' + expr[match.end():]
+                else:
+                    expr = expr[:match.start()] + '(' + subexpr + ')' + expr[match.end():]
+
+            # Évalue les opérations simples hors parenthèses
+            # Ex: 4 -5 + 2^2 - 4
+            # On cherche les séquences de chiffres et opérateurs sans lettres
+            pattern_simple = re.compile(r'(?<![a-zA-Z_\d])([+-]?\d+(?:\s*[-+*/%^]\s*\d+)+)(?![a-zA-Z_\d])')
+            def repl_simple(m):
+                subexpr = m.group(1)
+                if not has_letters(subexpr):
+                    try:
+                        return str(eval(subexpr.replace('^', '**')))
+                    except Exception:
+                        return subexpr
+                return subexpr
+            expr = pattern_simple.sub(repl_simple, expr)
+            return expr
+
         # Si right_part est une variable déjà définie
         if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', right_part):
             var = self.environment.get_variable(right_part)
@@ -56,8 +93,8 @@ class Parser:
             # Ajoute les * sur l'expression brute, puis expand
             right_with_stars = add_stars(right_part)
             expanded_right_func = expand_variables(right_with_stars)
-            # On ne retire plus les variables inconnues
-            final_expr = expanded_right_func
+            # Évalue les sous-expressions numériques
+            final_expr = eval_numeric_subexpressions(expanded_right_func)
             return Function(left_part, final_expr, self.environment)
 
         # Les autres cas utilisent expanded_right
