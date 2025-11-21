@@ -13,9 +13,8 @@ class Matrix(BaseAssignmentValue):
     def parse_matrix(self, matrix_str: str) -> List[List[float]]:
         """Parse une chaîne de caractères représentant une matrice"""
         matrix_str = matrix_str.strip()
-        if matrix_str.startswith('[[') and matrix_str.endswith(']]'):
-            matrix_str = matrix_str[2:-2]
-        elif matrix_str.startswith('[') and matrix_str.endswith(']'):
+        # Retire les crochets extérieurs si présents
+        if matrix_str.startswith('[') and matrix_str.endswith(']'):
             matrix_str = matrix_str[1:-1]
 
         rows = matrix_str.split(';')
@@ -23,6 +22,7 @@ class Matrix(BaseAssignmentValue):
 
         for row_str in rows:
             row_str = row_str.strip()
+            # Retire les crochets de la ligne si présents
             if row_str.startswith('[') and row_str.endswith(']'):
                 row_str = row_str[1:-1]
 

@@ -98,7 +98,7 @@ class Parser:
             return Function(left_part, final_expr, self.environment)
 
         # Les autres cas utilisent expanded_right
-        if re.match(r'^\[.*\]$', right_part):
+        if re.match(r'^\[+.*\]+$', right_part):
             return Matrix(left_part, expanded_right, self.environment)
 
         # Si c'est un nombre complexe
